@@ -18,22 +18,22 @@ GO
 -- Create date: 12 June 2019
 -- Description:	Checks if the Discontinue Dates are always one day before the PL End Date
 -- =============================================
-CREATE FUNCTION [validations].[fnCheckDiscontinueDatesBeforePLDate] 
+ALTER FUNCTION [validations].[fnCheckDiscontinueDatesBeforePLDate] 
 (
 	
 )
 RETURNS @rtnTable TABLE (
-	[Test ID] nvarchar(max) NOT NULL,
-	[Result ID] INT	NOT NULL,
-	[Flagged Column Name] nvarchar(max) NULL,
-	[SAP Discontinue Date] datetime  null,
-	[Public Status Date] datetime null,
-	[State] nvarchar(max) NULL,
-	[Meter ID] INT NULL,
 	[Event ID] INT NULL,
+	[Meter ID] INT NULL,
+	[Validation Name] nvarchar(max) NOT NULL,	
+	[Flagged Column Name] nvarchar(max) NULL,
+	[Flagged Column Value] nvarchar(max) null,
+	[Remarks] nvarchar(max) NULL,
+	[SKU State] nvarchar(max) NULL,	
 	[SAP Rate Start Date] datetime NULL,
 	[Cayman Release] nvarchar(max) NULL,	
 	[Meter Status] nvarchar(max) NULL
+	
 	
 )
 AS
@@ -41,31 +41,31 @@ BEGIN
 	-- Fill the table variable with the rows for your result set
 	INSERT INTO @rtnTable
 	SELECT 
-	[Test ID] = 'Discontinue Dates should be Before PL Dates',
-	[Result ID] = 1,
-	[Flagged Column Name] = 'SAP Discontinue Date',
-	[SAP Discontinue Date] = s.[SAP Discontinue Date],
-	[Public Status Date] = s. [Public Status Date],
-	[State] = s.[State],
-	[Meter ID] = m.[MeterID],
 	[Event ID] = e.[ID],
+	[Meter ID] = m.[MeterID],
+	[Validation Name] = 'SAP Discontinue Date should be Before PL Dates',	
+	[Flagged Column Name] = 'SAP Discontinue Date',
+	[Flagged Column Value] = CAST(s.[SAP Discontinue Date] AS DATE),
+	[Remarks] = 'The SAP Discontinue Date should be one day before the PL date of: '+ CAST(CAST(s. [Public Status Date] as DATE) as nvarchar(max)),
+	[SKU State] = s.[State],	
 	[SAP Rate Start Date] = e.[SAP Rate Start Date],
 	[Cayman Release] = e.[Cayman Release],
 	[Meter Status]  = m.[Meter Status]
-	FROM 
-		[dbASOMS_Production].[Prod].[vwASOMSEvent] e (NOLOCK) 
-		JOIN [dbASOMS_Production].[Prod].[vwASOMSMeter] m (NOLOCK)				ON m.[Parent id] = e.[ID] 
-		JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s (NOLOCK)		ON s.[Parent ID] = m.[MeterID]
+
+FROM 
+	[dbASOMS_Production].[Prod].[vwASOMSEvent] e (NOLOCK) 
+	JOIN [dbASOMS_Production].[Prod].[vwASOMSMeter] m (NOLOCK)				ON m.[Parent id] = e.[ID] 
+	JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s (NOLOCK)		ON s.[Parent ID] = m.[MeterID]
 
 
-where 
+WHERE 
 
-(s.[SAP Discontinue Date]) <> (s.[Public Status Date] - 1 )
-and
--- gets the last day of the month for the SAP discontinue date)
-Day(s.[SAP Discontinue Date]) <> DAY(EOMONTH(s.[SAP Discontinue Date])) 
+	(s.[SAP Discontinue Date]) <> (s.[Public Status Date] - 1 )
+	--AND Day(s.[SAP Discontinue Date]) <> DAY(EOMONTH(s.[SAP Discontinue Date])) 
+	AND e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
+
 ORDER BY s.[Public Status Date] DESC
 
-	RETURN 
+RETURN 
 END
 GO
