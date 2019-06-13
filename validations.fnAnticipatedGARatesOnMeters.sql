@@ -20,39 +20,37 @@ GO
 -- =============================================
 CREATE FUNCTION [validations].[fnAnticipatedGARatesOnMeters] ()
 RETURNS @rtnTable TABLE (
-	[Test ID] nvarchar(50) NOT NULL,
-	[Result ID] INT	NOT NULL,
-	[State] nvarchar NULL,
-	[Meter ID] INT NULL,
 	[Event ID] INT NULL,
+	[Meter ID] INT NULL,
+	[Validation Name] nvarchar(max) NOT NULL,	
+	[Flagged Column Name] nvarchar(max) NULL,
+	[Flagged Column Value] nvarchar(max) null,
+	[Remarks] nvarchar(max) NULL,
+	[SKU State] nvarchar(max) NULL,	
 	[SAP Rate Start Date] datetime NULL,
-	[Cayman Release] nvarchar(255) NULL,
-	[Anticipated GA Rates] float NULL,
-	[Flagged Column Name] nvarchar(max) NULL
+	[Cayman Release] nvarchar(max) NULL,	
+	[Meter Status] nvarchar(max) NULL	
 	
-) 
+)
 
 AS
 BEGIN
 	-- Fill the table variable with the rows for your result set
 	INSERT INTO @rtnTable
 	SELECT
-	[Test ID] = 'Anticipated GA Rates On Meters',
-	[RESULT ID] = CASE 
-	WHEN (select count(*) 
-	FROM [dbASOMS_Production].[Prod].[vwASOMSEvent] e (NOLOCK) 
-		JOIN [dbASOMS_Production].[Prod].[vwASOMSMeter] m (NOLOCK)				ON m.[Parent id] = e.[ID] 
-		JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s (NOLOCK)		ON s.[Parent ID] = m.[MeterID] 
-	where (s.[State]) not in ('New', 'Cancelled', 'On Hold')
-	and (m.[Meter Status] not in ('Never used','Never Used', 'NeverUsed')) -- checking out possible variations of the spelling/usage
-	and (m.[Anticipated GA Rate] IS NULL OR m.[Anticipated GA Rate] < 0)  ) > 0 THEN 1 ELSE -1 END,
-	[Anticipated GA Rate] = m.[Anticipated GA Rate],
-	[State] = s.[State],
-	[Cayman Release] = e.[Cayman Release],
-	[SAP Rate Start Date] = e.[SAP Rate Start Date],
-	[Meter ID] = m.[MeterID],
 	[Event ID] = e.[ID],
-	[Flagged Column Name] = 'Anticipated GA Rate'
+	[Meter ID] = m.[MeterID],
+	[Validation Name] = 'Anticipated GA Rates On meters should not be blank',	
+	[Flagged Column Name] = CASE WHEN (m.[Anticipated GA Rate] IS NULL OR m.[Anticipated GA Rate] < 0 OR m.[Anticipated GA Rate] = ' ') 
+							THEN 'Meter Anticipated GA Rate' 
+							END,
+	[Flagged Column Value] = m.[Anticipated GA Rate],
+	[Remarks] = 'The anticipated GA Rates on meters should not be ' + CAST(m.[Anticipated GA Rate] as nvarchar(max)),
+	[SKU State] = s.[State],	
+	[SAP Rate Start Date] = e.[SAP Rate Start Date],
+	[Cayman Release] = e.[Cayman Release],
+	[Meter Status]  = m.[Meter Status]
+	
 
 	FROM 
 		[dbASOMS_Production].[Prod].[vwASOMSEvent] e (NOLOCK) 
@@ -62,7 +60,8 @@ BEGIN
 	where 
 		(s.[State]) not in ('New', 'Cancelled', 'On Hold')
 		and (m.[Meter Status] not in ('Never used','Never Used', 'NeverUsed')) -- checking out possible variations of the spelling/usage
-		and (m.[Anticipated GA Rate] IS NULL OR m.[Anticipated GA Rate] < 0) 
+		and (m.[Anticipated GA Rate] IS NULL OR m.[Anticipated GA Rate] < 0)
+		and e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
 
 	RETURN 
 
