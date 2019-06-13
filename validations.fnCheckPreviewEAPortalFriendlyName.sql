@@ -27,16 +27,16 @@ CREATE FUNCTION [validations].[fnCheckPreviewEAPortalFriendlyName]
 	
 )
 RETURNS @rtnTable TABLE (
-	[Test ID] nvarchar(max) NOT NULL,
-	[Result ID] INT	NOT NULL,
-	[Flagged Column Name] nvarchar(max) NULL,
-	[EA Portal Friendly Name] nvarchar(max) not null,
-	[Launch Stage] nvarchar(max) NULL,
-	[Meter ID] INT NULL,
 	[Event ID] INT NULL,
+	[Meter ID] INT NULL,
+	[Validation Name] nvarchar(max) NOT NULL,	
+	[Flagged Column Name] nvarchar(max) NULL,
+	[Flagged Column Value] nvarchar(max) null,
+	[Remarks] nvarchar(max) NULL,
+	[SKU State] nvarchar(max) NULL,	
 	[SAP Rate Start Date] datetime NULL,
 	[Cayman Release] nvarchar(max) NULL,	
-	[Meter Status] nvarchar(max) NULL
+	[Meter Status] nvarchar(max) NULL	
 	
 )
 AS
@@ -44,17 +44,25 @@ BEGIN
 	-- Fill the table variable with the rows for your result set
 INSERT INTO @rtnTable
 SELECT 
-	[Test ID] = 'If SKU Sub Type is Preview EA Portal Name Needs To Have The Word Preview',
-	[Result ID] = CASE WHEN (
-								(s.[EA Portal Friendly Name]  LIKE '%PREVIEW%' AND s.[SAP Sku Sub Type] NOT LIKE '%PREVIEW%')
-									OR
-								(s.[EA Portal Friendly Name] NOT LIKE '%PREVIEW' AND s.[SAP Sku Sub Type] LIKE '%PREVIEW%')
-							) THEN -1 ELSE 1 END,
-	[Flagged Column Name] = CASE WHEN (s.[EA Portal Friendly Name]  LIKE '%PREVIEW%' AND s.[SAP Sku Sub Type] NOT LIKE '%PREVIEW%') THEN 'EA Portal Friendly Name' ELSE 'SAP Sku Sub Type' END,
-	[EA Portal Friendly Name] = s.[EA Portal Friendly Name],
-	[Launch Stage] = s.[SAP Sku Sub Type],
+[Event ID] = e.[ID],
 	[Meter ID] = m.[MeterID],
-	[Event ID] = e.[ID],
+	[Validation Name] = 'If SKU sub-type is Preview then EA Portal Name needs to have the word Preview',	
+	[Flagged Column Name] = CASE WHEN ( s.[EA Portal Friendly Name]  LIKE '%PREVIEW%' AND s.[Launch Stage] NOT LIKE '%PREVIEW%') 
+							THEN 'SKU Launch Stage' ELSE
+							CASE WHEN  (s.[EA Portal Friendly Name] NOT LIKE '%PREVIEW%' AND s.[Launch Stage] LIKE '%PREVIEW%')
+							THEN 'EA Portal Friendly Name' END
+							END,
+	[Flagged Column Value] = CASE WHEN ( s.[EA Portal Friendly Name]  LIKE '%PREVIEW%' AND s.[Launch Stage] NOT LIKE '%PREVIEW%') 
+							THEN s.[Launch Stage] 
+							ELSE CASE WHEN  (s.[EA Portal Friendly Name] NOT LIKE '%PREVIEW%' AND s.[Launch Stage] LIKE '%PREVIEW%')
+							THEN s.[EA Portal Friendly Name] END
+							END,
+	[Remarks] = CASE WHEN ( s.[EA Portal Friendly Name]  LIKE '%PREVIEW%' AND s.[Launch Stage] NOT LIKE '%PREVIEW%') 
+							THEN 'SKU Launch Stage does not contain the word Preview'
+							ELSE CASE WHEN  (s.[EA Portal Friendly Name] NOT LIKE '%PREVIEW%' AND s.[Launch Stage] LIKE '%PREVIEW%')
+							THEN 'EA Portal Friendly Name does not contain the word Preview' END
+							END,
+	[SKU State] = s.[State],	
 	[SAP Rate Start Date] = e.[SAP Rate Start Date],
 	[Cayman Release] = e.[Cayman Release],
 	[Meter Status]  = m.[Meter Status]
@@ -64,9 +72,12 @@ FROM
 	[dbASOMS_Production].[Prod].[vwASOMSMeterHist] m (NOLOCK)				ON m.[Parent id] = e.[ID] JOIN
 	[dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s (NOLOCK)		ON s.[Parent ID] = m.[ID] 
 WHERE
-	(s.[EA Portal Friendly Name]  LIKE '%PREVIEW%' AND s.[SAP Sku Sub Type] NOT LIKE '%PREVIEW%') -- Launch Stage instead of SAP Sku Sub Type
+	(
+		(s.[EA Portal Friendly Name]  LIKE '%PREVIEW%' AND s.[Launch Stage] NOT LIKE '%PREVIEW%') 
 	OR
-	(s.[EA Portal Friendly Name] NOT LIKE '%PREVIEW' AND s.[SAP Sku Sub Type] LIKE '%PREVIEW%')
+	(s.[EA Portal Friendly Name] NOT LIKE '%PREVIEW%' AND s.[Launch Stage] LIKE '%PREVIEW%')
+	)
+	AND e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
 
 RETURN 
 END
