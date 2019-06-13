@@ -24,16 +24,16 @@ CREATE FUNCTION [validations].[fnCheckRevenueSKUOfMeterIsNotNull]
 	
 )
 RETURNS @rtnTable TABLE (
-	[Test ID] nvarchar(max) NOT NULL,
-	[Result ID] INT	NOT NULL,
-	[Flagged Column Name] nvarchar(max) NULL,
-	[Revenue SKU] nvarchar(max) not null,
-	[State] nvarchar(max) NULL,
-	[Meter ID] INT NULL,
 	[Event ID] INT NULL,
+	[Meter ID] INT NULL,
+	[Validation Name] nvarchar(max) NOT NULL,	
+	[Flagged Column Name] nvarchar(max) NULL,
+	[Flagged Column Value] nvarchar(max) null,
+	[Remarks] nvarchar(max) NULL,
+	[SKU State] nvarchar(max) NULL,	
 	[SAP Rate Start Date] datetime NULL,
 	[Cayman Release] nvarchar(max) NULL,	
-	[Meter Status] nvarchar(max) NULL
+	[Meter Status] nvarchar(max) NULL	
 	
 )
 AS
@@ -41,16 +41,18 @@ BEGIN
 	-- Fill the table variable with the rows for your result set
 	INSERT INTO @rtnTable
 	SELECT
-		[Test ID] = 'Revenue SKU of Meter should not be null',
-		[Result ID] = 1,
-		[Flagged Column Name] = 'Revenue SKU',
-		[Revenue SKU] = m.[Revenue SKU],
-		[State] = s.[State],
-		[Meter ID] = m.[MeterID],
 		[Event ID] = e.[ID],
-		[SAP Rate Start Date] = e.[SAP Rate Start Date],
-		[Cayman Release] = e.[Cayman Release],
-		[Meter Status]  = m.[Meter Status]
+	[Meter ID] = m.[MeterID],
+	[Validation Name] = 'Revenue SKU of Meter should not be null',	
+	[Flagged Column Name] = CASE WHEN ( m.[Revenue SKU] IS NULL) 
+							THEN 'Meter Reveue SKU' 
+							END,
+	[Flagged Column Value] = m.[Revenue SKU],
+	[Remarks] = 'The value of Revenue SKU should not be ' + CAST(m.[Revenue SKU] as nvarchar(max)),
+	[SKU State] = s.[State],	
+	[SAP Rate Start Date] = e.[SAP Rate Start Date],
+	[Cayman Release] = e.[Cayman Release],
+	[Meter Status]  = m.[Meter Status]
 	FROM
 		 
 		[dbASOMS_Production].[Prod].[vwASOMSEvent] e (NOLOCK) 
@@ -58,6 +60,7 @@ BEGIN
 		JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s (NOLOCK)		ON s.[Parent ID] = m.[MeterID]
 	WHERE 
 		m.[Revenue SKU] IS NULL
+		AND e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
 	RETURN 
 END
 GO
