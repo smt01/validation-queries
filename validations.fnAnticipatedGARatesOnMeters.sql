@@ -60,7 +60,7 @@ BEGIN
 	where 
 		(s.[State]) not in ('New', 'Cancelled', 'On Hold')
 		and (m.[Meter Status] not in ('Never used','Never Used', 'NeverUsed')) -- checking out possible variations of the spelling/usage
-		and (m.[Anticipated GA Rate] IS NULL OR m.[Anticipated GA Rate] < 0)
+		and (m.[Anticipated GA Rate] IS NULL OR m.[Anticipated GA Rate] < 0 OR m.[Anticipated GA Rate] = ' ' )
 		and e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
 
 	RETURN 
