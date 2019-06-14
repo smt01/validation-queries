@@ -16,7 +16,8 @@ ALTER FUNCTION [validations].[fnMaterialDescriptionShouldBeginWithAZ]
 )
 RETURNS @rtnTable TABLE (
 	[Event ID] INT NULL,
-	[Meter ID] INT NULL,
+	[Work Item Type] nvarchar(max) null,
+	[Work Item ID] INT NULL,
 	[Validation Name] nvarchar(max) NOT NULL,	
 	[Flagged Column Name] nvarchar(max) NULL,
 	[Flagged Column Value] nvarchar(max) null,
@@ -34,7 +35,8 @@ BEGIN
 	INSERT INTO @rtnTable
 	SELECT 
 	[Event ID] = e.[ID],
-	[Meter ID] = m.[MeterID],
+	[Work Item Type] = 'Consumption SKU',
+	[Work Item ID] = s.[ConsumptionSkuID],	
 	[Validation Name] = 'SKU Material Description should begin with an "AZ " ',	
 	[Flagged Column Name] = CASE WHEN ( 
 								 s.[Material Description] IS NULL 
