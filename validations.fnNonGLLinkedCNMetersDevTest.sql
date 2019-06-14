@@ -25,7 +25,8 @@ CREATE FUNCTION [validations].[fnNonGLLinkedCNMetersDevTest]
 )
 RETURNS @rtnTable TABLE (
 	[Event ID] INT NULL,
-	[Meter ID] INT NULL,
+	[Work Item Type] nvarchar(max) null,
+	[Work Item ID] INT NULL,
 	[Validation Name] nvarchar(max) NOT NULL,	
 	[Flagged Column Name] nvarchar(max) NULL,
 	[Flagged Column Value] nvarchar(max) null,
@@ -42,7 +43,9 @@ BEGIN
 		INSERT into @rtnTable
 		SELECT
 		[Event ID] = e.[ID],
-	[Meter ID] = m.[MeterID],
+		[Work Item Type] = 'Meter',
+	[Work Item ID] = m.[MeterID],
+
 	[Validation Name] = 'Non-GL Linked China Meters should not have a Dev/Test Instance',	
 	[Flagged Column Name] = 'Azure Instance',
 	[Flagged Column Value] = s.[Azure Instance],
