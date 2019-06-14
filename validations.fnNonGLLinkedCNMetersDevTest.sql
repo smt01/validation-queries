@@ -24,20 +24,16 @@ CREATE FUNCTION [validations].[fnNonGLLinkedCNMetersDevTest]
 	
 )
 RETURNS @rtnTable TABLE (
-	[Test ID] nvarchar(max) NOT NULL,
-	[Result ID] INT	NOT NULL,
-	[Flagged Column Name] nvarchar(max) NULL,
-	[DevTest Discount Percentage] nvarchar(max) null,
-	[DevTest Discount Rate] nvarchar(max) null,
-	[Azure Instance] nvarchar(max),
-	[Region Name] nvarchar(max),
-	[Has DevTest Sku] nvarchar(20) null,
-	[State] nvarchar(max) NULL,
-	[Meter ID] INT NULL,
 	[Event ID] INT NULL,
+	[Meter ID] INT NULL,
+	[Validation Name] nvarchar(max) NOT NULL,	
+	[Flagged Column Name] nvarchar(max) NULL,
+	[Flagged Column Value] nvarchar(max) null,
+	[Remarks] nvarchar(max) NULL,
+	[SKU State] nvarchar(max) NULL,	
 	[SAP Rate Start Date] datetime NULL,
 	[Cayman Release] nvarchar(max) NULL,	
-	[Meter Status] nvarchar(max) NULL
+	[Meter Status] nvarchar(max) NULL	
 	
 )
 AS
@@ -45,20 +41,17 @@ BEGIN
 	-- Fill the table variable with the rows for your result set
 		INSERT into @rtnTable
 		SELECT
-		[Test ID] = 'Non-GL Linked China Meters should not have a Dev/Test Instance',
-		[Result ID] = 1,
-		[Flagged Column Name] = CASE WHEN (m.[DevTest Discount Percentage] IS NOT NULL) THEN 'DevTest Discount Percentage' ELSE  'DevTest Discount Rate' END,
-		[DevTest Discount Percentage] = m.[DevTest Discount Percentage],
-		[DevTest Discount Rate] =m.[DevTest Discount Rate],
-		[Azure Instance] = s.[Azure Instance],
-		[Region Name] = m.[Region Name],
-		[Has DevTest Sku] = m.[Has DevTest Sku],
-		[State] = s.[State],
-		[Meter ID] = m.[MeterID],
 		[Event ID] = e.[ID],
-		[SAP Rate Start Date] = e.[SAP Rate Start Date],
-		[Cayman Release] = e.[Cayman Release],
-		[Meter Status]  = m.[Meter Status]
+	[Meter ID] = m.[MeterID],
+	[Validation Name] = 'Non-GL Linked China Meters should not have a Dev/Test Instance',	
+	[Flagged Column Name] = 'Azure Instance',
+	[Flagged Column Value] = s.[Azure Instance],
+	[Remarks] = 'Non-GL Linked China Meters Should not have a Dev/Test Instance' ,
+	[SKU State] = s.[State],	
+	[SAP Rate Start Date] = e.[SAP Rate Start Date],
+	[Cayman Release] = e.[Cayman Release],
+	[Meter Status]  = m.[Meter Status]
+		
 	
 FROM 
 		[dbASOMS_Production].[Prod].[vwASOMSEvent] e (NOLOCK) 
@@ -69,6 +62,7 @@ where
 and		m.[Region Name] NOT IN ('Zone 1', 'Azure Stack', 'Azure Stack CN', NULL)
 and		m.[Has DevTest Sku] = 'No'
 and		(m.[DevTest Discount Percentage] IS NOT NULL OR m.[DevTest Discount Rate] IS NOT NULL)
+and     e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
 
 RETURN 
 END
