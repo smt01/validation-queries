@@ -25,7 +25,9 @@ CREATE FUNCTION [validations].[fnCheckRevenueSKUOfMeterIsNotNull]
 )
 RETURNS @rtnTable TABLE (
 	[Event ID] INT NULL,
-	[Meter ID] INT NULL,
+	[Work Item Type] nvarchar(max) null,
+	[Work Item ID] INT NULL,
+	
 	[Validation Name] nvarchar(max) NOT NULL,	
 	[Flagged Column Name] nvarchar(max) NULL,
 	[Flagged Column Value] nvarchar(max) null,
@@ -42,7 +44,8 @@ BEGIN
 	INSERT INTO @rtnTable
 	SELECT
 	[Event ID] = e.[ID],
-	[Meter ID] = m.[MeterID],
+	[Work Item Type] = 'Meter',
+	[Work Item ID] = m.[MeterID],	
 	[Validation Name] = 'Revenue SKU of Meter should not be null',	
 	[Flagged Column Name] = CASE WHEN ( m.[Revenue SKU] IS NULL) 
 							THEN 'Meter Reveue SKU' 
