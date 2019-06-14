@@ -41,7 +41,7 @@ BEGIN
 	-- Fill the table variable with the rows for your result set
 	INSERT INTO @rtnTable
 	SELECT
-		[Event ID] = e.[ID],
+	[Event ID] = e.[ID],
 	[Meter ID] = m.[MeterID],
 	[Validation Name] = 'Revenue SKU of Meter should not be null',	
 	[Flagged Column Name] = CASE WHEN ( m.[Revenue SKU] IS NULL) 
