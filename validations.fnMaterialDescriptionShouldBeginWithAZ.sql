@@ -15,16 +15,16 @@ ALTER FUNCTION [validations].[fnMaterialDescriptionShouldBeginWithAZ]
 	
 )
 RETURNS @rtnTable TABLE (
-	[Test ID] nvarchar(max) NOT NULL,
-	[Result ID] INT	NOT NULL,
-	[Flagged Column Name] nvarchar(max) NULL,
-	[Material Description] nvarchar(max) not null,
-	[State] nvarchar(max) NULL,
-	[Meter ID] INT NULL,
 	[Event ID] INT NULL,
+	[Meter ID] INT NULL,
+	[Validation Name] nvarchar(max) NOT NULL,	
+	[Flagged Column Name] nvarchar(max) NULL,
+	[Flagged Column Value] nvarchar(max) null,
+	[Remarks] nvarchar(max) NULL,
+	[SKU State] nvarchar(max) NULL,	
 	[SAP Rate Start Date] datetime NULL,
 	[Cayman Release] nvarchar(max) NULL,	
-	[Meter Status] nvarchar(max) NULL
+	[Meter Status] nvarchar(max) NULL	
 	
 )
 AS
@@ -33,13 +33,18 @@ BEGIN
 
 	INSERT INTO @rtnTable
 	SELECT 
-	[Test ID] = 'Material Description Should Begin with AZ ',
-	[Result ID] = CASE WHEN (SUBSTRING(s.[Material Description], 1, 3) <>'AZ '   OR (TRIM(s.[Material Description]) = ' ' )) THEN -1 ELSE 1 END,
-	[Flagged Column Name] = 'Material Description',
-	[Material Description] = s.[Material Description],
-	[State] = s.[State],
-	[Meter ID] = m.[MeterID],
 	[Event ID] = e.[ID],
+	[Meter ID] = m.[MeterID],
+	[Validation Name] = 'SKU Material Description should begin with an "AZ " ',	
+	[Flagged Column Name] = CASE WHEN ( 
+								 s.[Material Description] IS NULL 
+								 OR
+								 (SUBSTRING(s.[Material Description], 1, 3) <>'AZ '   OR (TRIM(s.[Material Description]) = ' ' )) ) 
+							THEN 'SKU Material Description' 
+							END,
+	[Flagged Column Value] = s.[Material Description],
+	[Remarks] = 'The SKU Material Description should begin with "AZ " instead of  ' + s.[Material Description],
+	[SKU State] = s.[State],	
 	[SAP Rate Start Date] = e.[SAP Rate Start Date],
 	[Cayman Release] = e.[Cayman Release],
 	[Meter Status]  = m.[Meter Status]
@@ -49,6 +54,7 @@ BEGIN
 		JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s (NOLOCK)		ON s.[Parent ID] = m.[ID] 
 	where (s.[State]) not in ('New', 'Cancelled', 'On Hold')
 	and 	s.[Material Description] IS NOT NULL 
-	and	(SUBSTRING(s.[Material Description], 1, 3) <>'AZ '   OR (TRIM(s.[Material Description]) = ' ' )) 
+	and	(SUBSTRING(s.[Material Description], 1, 3) <>'AZ '   OR (TRIM(s.[Material Description]) = ' ' ))
+	AND e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
 	RETURN 
 END
