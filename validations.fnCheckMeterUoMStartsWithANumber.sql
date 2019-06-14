@@ -28,7 +28,8 @@ CREATE FUNCTION [validations].[fnCheckMeterUoMStartsWithANumber]
 )
 RETURNS @rtnTable TABLE (
 	[Event ID] INT NULL,
-	[Meter ID] INT NULL,
+	[Work Item Type] nvarchar(max) null,
+	[Work Item ID] INT NULL,	
 	[Validation Name] nvarchar(max) NOT NULL,	
 	[Flagged Column Name] nvarchar(max) NULL,
 	[Flagged Column Value] nvarchar(max) null,
@@ -46,8 +47,9 @@ BEGIN
 		INSERT INTO @rtnTable
 		SELECT
 		[Event ID] = e.[ID],
-	[Meter ID] = m.[MeterID],
-	[Validation Name] = 'Meter Direct UoM field and EA UoM field should start with a number',	
+		[Work Item Type] = 'Meter',
+	[Work Item ID] = m.[MeterID],
+		[Validation Name] = 'Meter Direct UoM field and EA UoM field should start with a number',	
 	[Flagged Column Name] = CASE WHEN ( ISNUMERIC(SUBSTRING(LTRIM(m.[Direct Unit of Measure]), 1, 1))) <> 1 
 							THEN 'Direct Unit of Measure'
 							ELSE 'EA Unit of Measure' END,
