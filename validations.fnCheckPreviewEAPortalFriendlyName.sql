@@ -28,7 +28,8 @@ CREATE FUNCTION [validations].[fnCheckPreviewEAPortalFriendlyName]
 )
 RETURNS @rtnTable TABLE (
 	[Event ID] INT NULL,
-	[Meter ID] INT NULL,
+	[Work Item Type] nvarchar(max) null,
+	[Work Item ID] INT NULL,
 	[Validation Name] nvarchar(max) NOT NULL,	
 	[Flagged Column Name] nvarchar(max) NULL,
 	[Flagged Column Value] nvarchar(max) null,
@@ -45,7 +46,8 @@ BEGIN
 INSERT INTO @rtnTable
 SELECT 
 [Event ID] = e.[ID],
-	[Meter ID] = m.[MeterID],
+[Work Item Type] = 'Consumption SKU',
+	[Work Item ID] = s.[ConsumptionSkuID],	
 	[Validation Name] = 'If SKU sub-type is Preview then EA Portal Name needs to have the word Preview',	
 	[Flagged Column Name] = CASE WHEN ( s.[EA Portal Friendly Name]  LIKE '%PREVIEW%' AND s.[Launch Stage] NOT LIKE '%PREVIEW%') 
 							THEN 'SKU Launch Stage' ELSE
