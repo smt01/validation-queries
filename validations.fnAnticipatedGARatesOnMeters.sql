@@ -21,7 +21,8 @@ GO
 CREATE FUNCTION [validations].[fnAnticipatedGARatesOnMeters] ()
 RETURNS @rtnTable TABLE (
 	[Event ID] INT NULL,
-	[Meter ID] INT NULL,
+	[Work Item Type] nvarchar(max) null,
+	[Work Item ID] INT NULL,
 	[Validation Name] nvarchar(max) NOT NULL,	
 	[Flagged Column Name] nvarchar(max) NULL,
 	[Flagged Column Value] nvarchar(max) null,
@@ -39,7 +40,8 @@ BEGIN
 	INSERT INTO @rtnTable
 	SELECT
 	[Event ID] = e.[ID],
-	[Meter ID] = m.[MeterID],
+	[Work Item Type] = 'Meter',
+	[Work Item ID] = m.[MeterID],
 	[Validation Name] = 'Anticipated GA Rates On meters should not be blank',	
 	[Flagged Column Name] = CASE WHEN (m.[Anticipated GA Rate] IS NULL OR m.[Anticipated GA Rate] < 0 OR m.[Anticipated GA Rate] = ' ') 
 							THEN 'Meter Anticipated GA Rate' 
