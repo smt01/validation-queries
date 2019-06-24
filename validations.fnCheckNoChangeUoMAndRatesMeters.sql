@@ -47,26 +47,30 @@ BEGIN
 	[Work Item ID] = m.MeterID,	
 	[Validation Name] = 'UoM should not change if Direct Rate does not change',	
 	[Flagged Column Name] = CASE WHEN ( m.[Direct Unit of Measure] <> (SELECT TOP(1) mhr.[Direct Unit of Measure]
-									  FROM [dbASOMS_Production].[Prod].[vwASOMSMeter] mhr
+									  FROM [dbASOMS_Production].[Prod].[vwASOMSMeterHistRev] mhr
 									  where mhr.[Resource GUID] = m.[Resource GUID]
-									  AND mhr.MeterID = m.MeterID)	
+									  AND mhr.MeterID = m.MeterID
+									  ORDER BY mhr.[Changed Date] DESC )	
 							) THEN 'Meter Direct Unit of Measure'
 							ELSE CASE WHEN (m.[Direct Rate] <> (SELECT TOP(1) mhr.[Direct Rate]
-									  FROM [dbASOMS_Production].[Prod].[vwASOMSMeter] mhr
+									  FROM [dbASOMS_Production].[Prod].[vwASOMSMeterHistRev] mhr
 									  where mhr.[Resource GUID] = m.[Resource GUID]
-									  AND mhr.MeterID = m.MeterID									 
+									  AND mhr.MeterID = m.MeterID
+									  ORDER BY mhr.[Changed Date] DESC
 									  )) THEN 'Meter Direct Rate' END
 									  END,
 	[Flagged Column Value] = CASE WHEN ( m.[Direct Unit of Measure] <> (SELECT TOP(1) mhr.[Direct Unit of Measure]
-									  FROM [dbASOMS_Production].[Prod].[vwASOMSMeter] mhr
+									  FROM [dbASOMS_Production].[Prod].[vwASOMSMeterHistRev] mhr
 									  where mhr.[Resource GUID] = m.[Resource GUID]
-									  AND mhr.MeterID = m.MeterID)	
-							) THEN m.[Direct Unit of Measure]
+									  AND mhr.MeterID = m.MeterID
+									  ORDER BY mhr.[Changed Date] DESC )	
+							) THEN CAST(m.[Direct Unit of Measure] as nvarchar(max))
 							ELSE CASE WHEN (m.[Direct Rate] <> (SELECT TOP(1) mhr.[Direct Rate]
-									  FROM [dbASOMS_Production].[Prod].[vwASOMSMeter] mhr
+									  FROM [dbASOMS_Production].[Prod].[vwASOMSMeterHistRev] mhr
 									  where mhr.[Resource GUID] = m.[Resource GUID]
-									  AND mhr.MeterID = m.MeterID									 
-									  )) THEN m.[Direct Rate] END
+									  AND mhr.MeterID = m.MeterID
+									  ORDER BY mhr.[Changed Date] DESC
+									  )) THEN CAST(m.[Direct Rate] as nvarchar(max)) END
 									  END,
 	[Remarks] = 'UoM should not change if direct rate doesnt change ',
 	[SKU State] = (SELECT s.[State] 
@@ -82,17 +86,17 @@ BEGIN
 		JOIN [dbASOMS_Production].[Prod].[vwASOMSMeter] m on m.[Parent id] = e.ID
 where m.[Resource GUID] <> ' ' 
 and (m.[Direct Unit of Measure] <> (SELECT TOP(1) mhr.[Direct Unit of Measure]
-									  FROM [dbASOMS_Production].[Prod].[vwASOMSMeter] mhr
+									  FROM [dbASOMS_Production].[Prod].[vwASOMSMeterHistRev] mhr
 									  where mhr.[Resource GUID] = m.[Resource GUID]
 									  AND mhr.MeterID = m.MeterID
-									 -- ORDER BY mhr.[Changed Date] DESC)
+									  ORDER BY mhr.[Changed Date] DESC
 									 )
 	 OR
 	 m.[Direct Rate] <> (SELECT TOP(1) mhr.[Direct Rate]
-									  FROM [dbASOMS_Production].[Prod].[vwASOMSMeter] mhr
+									  FROM [dbASOMS_Production].[Prod].[vwASOMSMeterHistRev] mhr
 									  where mhr.[Resource GUID] = m.[Resource GUID]
 									  AND mhr.MeterID = m.MeterID
-									  --ORDER BY mhr.[Changed Date] DESC)
+									  ORDER BY mhr.[Changed Date] DESC
 									  ))
 AND e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
 	RETURN 
