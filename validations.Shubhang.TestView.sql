@@ -15,6 +15,7 @@ select * from validations.fnCheckPreviewEAPortalFriendlyName() UNION
 select * from validations.fnNonGLLinkedCNMetersDevTest() UNION
 select * from validations.fnCheckMeterUoMStartsWithANumber() UNION
 select * from validations.fnCheckDiscontinueDatesBeforePLDate() UNION
-select * from validations.fnCheckRevenueSKUOfMeterIsNotNull();
+select * from validations.fnCheckRevenueSKUOfMeterIsNotNull() UNION
+select * from validations.fnCheckNoChangeUoMAndRatesMeters();
 
 GO
