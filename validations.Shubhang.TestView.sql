@@ -9,13 +9,17 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 
-CREATE VIEW [validations].[shubhangTest] AS
+ALTER VIEW [validations].[shubhangTest] AS
 select * from validations.fnMaterialDescriptionShouldBeginWithAZ() UNION
 select * from validations.fnCheckPreviewEAPortalFriendlyName() UNION
 select * from validations.fnNonGLLinkedCNMetersDevTest() UNION
 select * from validations.fnCheckMeterUoMStartsWithANumber() UNION
 select * from validations.fnCheckDiscontinueDatesBeforePLDate() UNION
 select * from validations.fnCheckRevenueSKUOfMeterIsNotNull() UNION
-select * from validations.fnCheckNoChangeUoMAndRatesMeters();
+select * from validations.fnCheckNoChangeUoMAndRatesMeters() UNION
+select * from validations.fnCheckNoChangeUoMAndRatesSKU() UNION
+select * from validations.fnCheckMatDesAndEAPortalFriendlyNameStringInSkuSubType() UNION
+select * from validations.fnCheckSKUAndPartNumber() UNION
+select * from validations.fnCheckNewSKUShouldNotHaveDiscontinueDate();
 
 GO
