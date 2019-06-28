@@ -65,9 +65,11 @@ SELECT
 		JOIN [dbASOMS_Production].[Prod].[vwASOMSMeter] m (NOLOCK)				ON m.[Parent id] = e.[ID] 
 		JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKU] s (NOLOCK)		ON s.[Parent ID] = m.[MeterID]
 where 
-(s.[Is New Sku] = 'Yes' and s.[Part Number] is NOT NULL) 
+((s.[Is New Sku] = 'Yes' and s.[Part Number] is NOT NULL) 
 OR
-(s.[Is New Sku] = 'No' and s.[Part Number] is NULL)
+(s.[Is New Sku] = 'No' and s.[Part Number] is NULL))
+and e.[Sap Publish Status] <> 'Committed'
+
 AND e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
 	RETURN 
 END
