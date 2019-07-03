@@ -1,14 +1,6 @@
--- ================================================
--- Template generated from Template Explorer using:
--- Create Scalar Function (New Menu).SQL
---
--- Use the Specify Values for Template Parameters 
--- command (Ctrl-Shift-M) to fill in the parameter 
--- values below.
---
--- This block of comments will not be included in
--- the definition of the function.
--- ================================================
+USE [dbASOMS_Validation]
+GO
+/****** Object:  UserDefinedFunction [validations].[fnCheckMeterForTagChange]    Script Date: 7/3/2019 10:50:31 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -40,14 +32,12 @@ BEGIN
 			  m.[Has DevTest Percent Change],
 			  m.[Has EA Uom Change],
 			  m.[Has Graduated Rate Change],
-			  m.[Has Consumption Sku], -- Adding a new SKU to the meter - Does it modify the other tags as well? Should we check more for this?
 			 m.[Has Incl Qty Decrease],
 			 m.[Has Incl Qty Increase],
 			 m.[Has Meter Migration],
 			 m.[Has Name Change],
 			 m.[Has Price Decrease],
-			 m.[Has Price Increase],
-			 m.[Has Promo Sku],
+			 m.[Has Price Increase],			 
 			 m.[Has Revenue Sku Change]
 			 FROM [dbASOMS_Production].[Prod].[vwASOMSMeter] m
 			  where ( m.MeterID = @MeterID and m.[Parent id] = @EventID)
@@ -56,15 +46,13 @@ BEGIN
 			 (SELECT  
 			  mh.[Has DevTest Percent Change],
 			  mh.[Has EA Uom Change],
-			  mh.[Has Graduated Rate Change],
-			  mh.[Has Consumption Sku],
+			  mh.[Has Graduated Rate Change],			 
 			 mh.[Has Incl Qty Decrease],
 			 mh.[Has Incl Qty Increase],
 			 mh.[Has Meter Migration],
 			 mh.[Has Name Change],
 			 mh.[Has Price Decrease],
-			 mh.[Has Price Increase],
-			 mh.[Has Promo Sku],
+			 mh.[Has Price Increase],			 
 			 mh.[Has Revenue Sku Change]
 			 FROM [dbASOMS_Production].[Prod].[vwASOMSMeterHist] mh
 			Where (mh.MeterID = @MeterID and mh.EventID = @EventID)
@@ -80,5 +68,3 @@ BEGIN
 	RETURN @ResultVar
 
 END
-GO
-
