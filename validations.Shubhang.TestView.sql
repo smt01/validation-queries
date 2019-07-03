@@ -20,6 +20,7 @@ select * from validations.fnCheckNoChangeUoMAndRatesMeters() UNION
 select * from validations.fnCheckNoChangeUoMAndRatesSKU() UNION
 select * from validations.fnCheckMatDesAndEAPortalFriendlyNameStringInSkuSubType() UNION
 select * from validations.fnCheckSKUAndPartNumber() UNION
-select * from validations.fnCheckNewSKUShouldNotHaveDiscontinueDate();
+select * from validations.fnCheckNewSKUShouldNotHaveDiscontinueDate() UNION
+select distinct * from validations.fnCheckEventForScopeAndRateStartDate();
 
 GO
