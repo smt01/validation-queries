@@ -1,14 +1,6 @@
--- ================================================
--- Template generated from Template Explorer using:
--- Create Inline Function (New Menu).SQL
---
--- Use the Specify Values for Template Parameters 
--- command (Ctrl-Shift-M) to fill in the parameter 
--- values below.
---
--- This block of comments will not be included in
--- the definition of the function.
--- ================================================
+USE [dbASOMS_Validation]
+GO
+/****** Object:  UserDefinedFunction [validations].[fnCheckMeterForTagChangeOnModify]    Script Date: 7/3/2019 10:46:05 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -45,10 +37,10 @@ SELECT
 [Event ID] = e.[ID],
 [Work Item Type] = 'Meter',
 	[Work Item ID] = m.MeterID,	
-	[Validation Name] = 'A modified Meter should have at least one change tag marked',	
+	[Validation Name] = 'A modified meter should have at least one change tag marked',	
 	[Flagged Column Name] = 'Has Meter Status Changed' ,
-	[Flagged Column Value] = m.[Has Meter Status Changed],
-	[Remarks] = 'No tags have been modified for this Meter. ',
+	[Flagged Column Value] = m.[Has Meter Status Changed],  ---m.[Has Meter Status Changed],
+	[Remarks] = 'No tags have been changed for this modified meter. ',
 	[SKU State] = s.[State],	
 	[SAP Rate Start Date] = e.[SAP Rate Start Date],
 	[Cayman Release] = e.[Cayman Release],
@@ -59,9 +51,8 @@ SELECT
 		JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKU] s (NOLOCK)		ON s.[Parent ID] = m.[MeterID]
 	Where
 	e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight 
-	AND (s.[Is New Sku] = 'No')
+	AND (e.[Change Type] = 'Modify Existing')
 	AND ([dbASOMS_Validation].[validations].[fnCheckMeterForTagChange](e.EventID, m.MeterID) <> 1)
 
 	RETURN 
 END
-GO
