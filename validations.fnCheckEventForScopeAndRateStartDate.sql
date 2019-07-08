@@ -69,7 +69,8 @@ SELECT
 		[dbASOMS_Production].[Prod].[vwASOMSEvent] e (NOLOCK) 
 		JOIN [dbASOMS_Production].[Prod].[vwASOMSMeter] m (NOLOCK)				ON m.[Parent id] = e.[ID] 
 		JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKU] s (NOLOCK)		ON s.[Parent ID] = m.[MeterID]
-	where (
+	where (e.[Cayman Release] != '') --Adding this to remove 'empty' Cayman Releases
+	AND (
 			(e.[Cayman Release] is not NULL AND e.[CP Rate Start Date] is NULL )
 			OR
 			(e.[CP Rate Start Date] is not NULL AND e.[Cayman Release] is NULL)
