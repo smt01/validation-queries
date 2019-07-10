@@ -67,14 +67,15 @@ SELECT
 	[Meter Status]  = m.[Meter Status]
 	FROM 
 		[dbASOMS_Production].[Prod].[vwASOMSEvent] e (NOLOCK) 
-		JOIN [dbASOMS_Production].[Prod].[vwASOMSMeter] m (NOLOCK)				ON m.[Parent id] = e.[ID] 
-		JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKU] s (NOLOCK)		ON s.[Parent ID] = m.[MeterID]
-	where (e.[Cayman Release] != '') --Adding this to remove 'empty' Cayman Releases
-	AND (
-			(e.[Cayman Release] is not NULL AND e.[CP Rate Start Date] is NULL )
+		JOIN [dbASOMS_Production].[Prod].[vwASOMSMeterHist] m (NOLOCK)				ON m.[Parent id] = e.[ID] 
+		JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s (NOLOCK)		ON s.[Parent ID] = m.[MeterID]
+	where 
+	 (
+			(ISNULL(e.[Cayman Release], '') <> '' AND e.[CP Rate Start Date] is NULL )
 			OR
 			(e.[CP Rate Start Date] is not NULL AND e.[Cayman Release] is NULL)
 		)
+		AND e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight 
 	RETURN 
 END
 GO
