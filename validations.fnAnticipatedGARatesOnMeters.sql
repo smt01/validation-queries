@@ -56,13 +56,13 @@ BEGIN
 
 	FROM 
 		[dbASOMS_Production].[Prod].[vwASOMSEvent] e (NOLOCK) 
-		JOIN [dbASOMS_Production].[Prod].[vwASOMSMeter] m (NOLOCK)				ON m.[Parent id] = e.[ID] 
+		JOIN [dbASOMS_Production].[Prod].[vwASOMSMeterHist] m (NOLOCK)				ON m.[Parent id] = e.[ID] 
 		JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s (NOLOCK)		ON s.[Parent ID] = m.[MeterID]
 		
 	where 
-		(s.[State]) not in ('New', 'Cancelled', 'On Hold')
-		and (m.[Meter Status] not in ('Never used','Never Used', 'NeverUsed')) -- checking out possible variations of the spelling/usage
-		and (m.[Anticipated GA Rate] IS NULL OR m.[Anticipated GA Rate] < 0 )
+		--(s.[State]) not in ('New', 'Cancelled', 'On Hold')
+		--and (m.[Meter Status] not in ('Never used','Never Used', 'NeverUsed')) -- checking out possible variations of the spelling/usage
+		(m.[Anticipated GA Rate] IS NULL OR m.[Anticipated GA Rate] < 0 )
 		and e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
 
 	RETURN 
