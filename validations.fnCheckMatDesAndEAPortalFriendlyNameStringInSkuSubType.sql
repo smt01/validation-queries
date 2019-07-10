@@ -19,6 +19,8 @@ GO
 -- Description:	Promo/DevTest included in naming fields
 --				More details here: https://dev.azure.com/AzureReleaseOperation/Release%20Implementation/_workitems/edit/138
 -- =============================================
+-- Check for possible DvTst spellings
+
 CREATE FUNCTION [validations].[fnCheckMatDesAndEAPortalFriendlyNameStringInSkuSubType]
 (
 	
