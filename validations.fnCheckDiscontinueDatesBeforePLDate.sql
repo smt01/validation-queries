@@ -18,7 +18,7 @@ GO
 -- Create date: 12 June 2019
 -- Description:	Checks if the Discontinue Dates are always one day before the PL End Date
 -- =============================================
-ALTER FUNCTION [validations].[fnCheckDiscontinueDatesBeforePLDate] 
+CREATE FUNCTION [validations].[fnCheckDiscontinueDatesBeforePLDate] 
 (
 	
 )
@@ -62,7 +62,7 @@ FROM
 
 WHERE 
 
-	(s.[SAP Discontinue Date]) <> (s.[Public Status Date] - 1 )
+	(s.[SAP Discontinue Date]) <> DATEADD(dd,DAY(s.[Public Status Date]), -1)
 	--AND Day(s.[SAP Discontinue Date]) <> DAY(EOMONTH(s.[SAP Discontinue Date])) 
 	AND e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
 
