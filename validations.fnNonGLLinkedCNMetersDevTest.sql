@@ -58,13 +58,13 @@ BEGIN
 	
 FROM 
 		[dbASOMS_Production].[Prod].[vwASOMSEvent] e (NOLOCK) 
-		JOIN [dbASOMS_Production].[Prod].[vwASOMSMeter] m (NOLOCK)				ON m.[Parent id] = e.[ID] 
+		JOIN [dbASOMS_Production].[Prod].[vwASOMSMeterHist] m (NOLOCK)				ON m.[Parent id] = e.[ID] 
 		JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s (NOLOCK)		ON s.[Parent ID] = m.[MeterID]
 where 
 		s.[Azure Instance] = 'China'
 and		m.[Region Name] NOT IN ('Zone 1', 'Azure Stack', 'Azure Stack CN', NULL)
-and		m.[Has DevTest Sku] = 'No'
-and		(m.[DevTest Discount Percentage] IS NOT NULL OR m.[DevTest Discount Rate] IS NOT NULL)
+and		m.[Has DevTest Sku] = 'Yes'
+-- and		(m.[DevTest Discount Percentage] IS NOT NULL OR m.[DevTest Discount Rate] IS NOT NULL)
 and     e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
 
 RETURN 
