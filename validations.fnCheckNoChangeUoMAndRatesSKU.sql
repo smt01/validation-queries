@@ -11,6 +11,9 @@ GO
 -- Description:	UoM does not change if Rate does not change (for SKUs)
 --				More description can be found here: https://dev.azure.com/AzureReleaseOperation/Release%20Implementation/_workitems/edit/125
 -- =============================================
+
+
+-- Flip the comparison and check again
 CREATE FUNCTION [validations].[fnCheckNoChangeUoMAndRatesSKU]
 (
 	
