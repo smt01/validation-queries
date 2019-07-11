@@ -51,38 +51,38 @@ SELECT
 	[Flagged Column Name] = CASE WHEN (
 							(s.[SKu Sub Type] = 'Promo' and s.[Material Description] NOT LIKE '%Promo%' 
 							OR
-							s.[SKu Sub Type] = 'DevTest' and s.[Material Description] NOT LIKE '%DevTest%' )
+							s.[SKu Sub Type] = 'DevTest' and (s.[Material Description] NOT LIKE '%DevTest%' AND s.[Material Description] NOT LIKE '%DvTst%') )
 							)THEN 'SKU Material Description' ELSE
 							CASE WHEN (
 							(s.[SKu Sub Type] = 'Promo' and s.[EA Portal Friendly Name] NOT LIKE '%Promo%' 
 							OR
-							s.[SKu Sub Type] = 'DevTest' and s.[EA Portal Friendly Name] NOT LIKE '%DevTest%' )
+							s.[SKu Sub Type] = 'DevTest' and (s.[EA Portal Friendly Name] NOT LIKE '%DevTest%' AND s.[EA Portal Friendly Name] NOT LIKE '%Dev/Test%' ) )
 							)
 							THEN 'EA Portal Friendly Name' END
 							END,
 	[Flagged Column Value] = CASE WHEN (
 							(s.[SKu Sub Type] = 'Promo' and s.[Material Description] NOT LIKE '%Promo%' 
 							OR
-							s.[SKu Sub Type] = 'DevTest' and s.[Material Description] NOT LIKE '%DevTest%' )
+							s.[SKu Sub Type] = 'DevTest' and (s.[Material Description] NOT LIKE '%DevTest%' AND s.[Material Description] NOT LIKE '%DvTst%') )
 							)
 							THEN s.[Material Description]
 							ELSE CASE WHEN (
 							(s.[SKu Sub Type] = 'Promo' and s.[EA Portal Friendly Name] NOT LIKE '%Promo%' 
 							OR
-							s.[SKu Sub Type] = 'DevTest' and s.[EA Portal Friendly Name] NOT LIKE '%DevTest%' )
+							s.[SKu Sub Type] = 'DevTest' and (s.[EA Portal Friendly Name] NOT LIKE '%DevTest%' AND s.[EA Portal Friendly Name] NOT LIKE '%Dev/Test%' ) )
 							)
 							THEN s.[EA Portal Friendly Name] END
 							END,
 	[Remarks] = CASE WHEN (
 							(s.[SKu Sub Type] = 'Promo' and s.[Material Description] NOT LIKE '%Promo%' 
 							OR
-							s.[SKu Sub Type] = 'DevTest' and s.[Material Description] NOT LIKE '%DevTest%' )
+							s.[SKu Sub Type] = 'DevTest' and (s.[Material Description] NOT LIKE '%DevTest%' AND s.[Material Description] NOT LIKE '%DvTst%') )
 							)
 							THEN 'SKU Material Description field does not contain: '+s.[SKu Sub Type]
 							ELSE CASE WHEN (
 							(s.[SKu Sub Type] = 'Promo' and s.[EA Portal Friendly Name] NOT LIKE '%Promo%' 
 							OR
-							s.[SKu Sub Type] = 'DevTest' and s.[EA Portal Friendly Name] NOT LIKE '%DevTest%' )
+							s.[SKu Sub Type] = 'DevTest' and (s.[EA Portal Friendly Name] NOT LIKE '%DevTest%' AND s.[EA Portal Friendly Name] NOT LIKE '%Dev/Test%' ) )
 							)
 							THEN 'SKU EA Portal Friendly Name field does not contain: '+s.[SKu Sub Type] END
 							END,
@@ -97,8 +97,17 @@ FROM
 		JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKU] s (NOLOCK)		ON s.[Parent ID] = m.[MeterID]
 
 		where s.[SKu Sub Type] <> ' '
-		and (s.[SKu Sub Type] = 'Promo' and (s.[Material Description] NOT LIKE '%Promo%' OR s.[EA Portal Friendly Name] NOT LIKE '%Promo%' ))
-		OR  (s.[SKu Sub Type] = 'DevTest' and (s.[Material Description] NOT LIKE '%DevTest%' OR s.[EA Portal Friendly Name] NOT LIKE '%DevTest%' ))
+		AND e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
+		and (
+		(s.[SKu Sub Type] = 'Promo' and (s.[Material Description] NOT LIKE '%Promo%' OR s.[EA Portal Friendly Name] NOT LIKE '%Promo%' ))
+		OR  (s.[SKu Sub Type] = 'DevTest' and (
+			(s.[Material Description] NOT LIKE '%DevTest%' AND s.[Material Description] NOT LIKE '%DvTst%') 
+			OR 
+			(s.[EA Portal Friendly Name] NOT LIKE '%DevTest%' AND s.[EA Portal Friendly Name] NOT LIKE '%Dev/Test%' ) 
+			)
+			)
+		)
+		
 	RETURN 
 END
 GO
