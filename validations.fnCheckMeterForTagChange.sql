@@ -28,21 +28,7 @@ BEGIN
  SELECT @Count= (SELECT COUNT(*) FROM (SELECT DISTINCT *
 			   FROM 
 			( 
-			(SELECT  
-			  m.[Has DevTest Percent Change],
-			  m.[Has EA Uom Change],
-			  m.[Has Graduated Rate Change],
-			 m.[Has Incl Qty Decrease],
-			 m.[Has Incl Qty Increase],
-			 m.[Has Meter Migration],
-			 m.[Has Name Change],
-			 m.[Has Price Decrease],
-			 m.[Has Price Increase],			 
-			 m.[Has Revenue Sku Change]
-			 FROM [dbASOMS_Production].[Prod].[vwASOMSMeter] m
-			  where ( m.MeterID = @MeterID and m.[Parent id] = @EventID)
-			  )		  
-			  UNION ALL
+			
 			 (SELECT  
 			  mh.[Has DevTest Percent Change],
 			  mh.[Has EA Uom Change],

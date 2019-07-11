@@ -37,19 +37,7 @@ BEGIN
  SELECT @Count= (SELECT COUNT(*) FROM (SELECT DISTINCT *
 			   FROM 
 			( 
-			(SELECT  
-			  s.[Has Discount Slope Changed],
-			  s.[Has Ea Portal Changed],  
-			  s.[Has Ea Rate Decreased],
-			  s.[Has Ea Rate Increased],
-			  s.[Has Ea Uom Changed],
-			  s.[Has Included Quantity Changed], 
-			  s.[Has Material Description Changed],
-			  s.[Has Public Status Date Changed] 
-			  FROM [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKU] s
-			  where (s.ConsumptionSkuID = @SKUID and s.MeterID = @MeterID and s.EventID = @EventID)
-			  )		  
-			  UNION ALL
+			
 			 (SELECT  
 			 sh.[Has Discount Slope Changed],
 			 sh.[Has Ea Portal Changed], 
