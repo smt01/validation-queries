@@ -26,8 +26,7 @@ CREATE FUNCTION [validations].[fnCheckRevenueSKUOfMeterIsNotNull]
 RETURNS @rtnTable TABLE (
 	[Event ID] INT NULL,
 	[Work Item Type] nvarchar(max) null,
-	[Work Item ID] INT NULL,
-	
+	[Work Item ID] INT NULL,	
 	[Validation Name] nvarchar(max) NOT NULL,	
 	[Flagged Column Name] nvarchar(max) NULL,
 	[Flagged Column Value] nvarchar(max) null,
@@ -59,7 +58,7 @@ BEGIN
 	FROM
 		 
 		[dbASOMS_Production].[Prod].[vwASOMSEvent] e (NOLOCK) 
-		JOIN [dbASOMS_Production].[Prod].[vwASOMSMeter] m (NOLOCK)				ON m.[Parent id] = e.[ID] 
+		JOIN [dbASOMS_Production].[Prod].[vwASOMSMeterHist] m (NOLOCK)				ON m.[Parent id] = e.[ID] 
 		JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s (NOLOCK)		ON s.[Parent ID] = m.[MeterID]
 	WHERE 
 		m.[Revenue SKU] IS NULL
