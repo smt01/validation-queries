@@ -74,7 +74,7 @@ BEGIN
 	[Meter Status] = m.[Meter Status]
 
 	from  [dbASOMS_Production].[Prod].[vwASOMSEvent] e  				
-		JOIN [dbASOMS_Production].[Prod].[vwASOMSMeter] m on m.[Parent id] = e.ID
+		JOIN [dbASOMS_Production].[Prod].[vwASOMSMeterHist] m on m.[Parent id] = e.ID
 		JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKU] s on s.[Parent ID] = m.MeterID
 where (s.[EA Unit of Measure] <> NULL or s.[EA Rate] <> NULL)
  AND (s.[EA Unit of Measure]<> (SELECT  sh.[EA Unit of Measure]
