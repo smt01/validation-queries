@@ -73,17 +73,14 @@ BEGIN
 									  )) THEN CAST(m.[Direct Rate] as nvarchar(max)) END
 									  END,
 	[Remarks] = 'UoM should not change if direct rate doesnt change ',
-	[SKU State] = (SELECT s.[State] 
-				  from [dbASOMS_Production].[Prod].[vwASOMSMeterHist] mh
-				  JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s
-				  ON s.[Parent ID] = mh.[ID]
-				  where mh.[Parent id] = e.[ID]),	
+	[SKU State] = s.[State],	
 	[SAP Rate Start Date] = e.[SAP Rate Start Date],
 	[Cayman Release] = e.[Cayman Release],
 	[Meter Status] = m.[Meter Status]
 
 	from [dbASOMS_Production].[Prod].[vwASOMSEvent] e (NOLOCK) 				
-		JOIN [dbASOMS_Production].[Prod].[vwASOMSMeter] m on m.[Parent id] = e.ID
+		JOIN [dbASOMS_Production].[Prod].[vwASOMSMeterHist] m on m.[Parent id] = e.ID
+		JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s (NOLOCK)	ON s.[Parent ID] = m.[MeterID]
 where m.[Resource GUID] <> ' ' 
 and (m.[Direct Unit of Measure] <> (SELECT TOP(1) mhr.[Direct Unit of Measure]
 									  FROM [dbASOMS_Production].[Prod].[vwASOMSMeterHistRev] mhr
@@ -101,4 +98,3 @@ and (m.[Direct Unit of Measure] <> (SELECT TOP(1) mhr.[Direct Unit of Measure]
 AND e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
 	RETURN 
 END
-GO
