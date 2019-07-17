@@ -55,7 +55,7 @@ BEGIN
 		JOIN [dbASOMS_Production].[Prod].[vwASOMSMeterHist] m (NOLOCK)				ON m.[Parent id] = e.[ID] 
 		JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s (NOLOCK)		ON s.[Parent ID] = m.[ID] 
 	where (s.[State]) not in ('New', 'Cancelled', 'On Hold')
-	and 	s.[Material Description] IS NOT NULL 
+	and 	ISNULL(s.[Material Description], '')<>''
 	and	(SUBSTRING(s.[Material Description], 1, 3) <>'AZ '   OR (TRIM(s.[Material Description]) = ' ' ))
 	AND e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
 	RETURN 
