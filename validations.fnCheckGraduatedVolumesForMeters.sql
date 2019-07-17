@@ -50,35 +50,35 @@ SELECT
 	[Validation Name] = 'Graduated volume rates of meters should tier flat or upwards',	
 	[Flagged Column Name] = CASE 
                             
-                            WHEN (m.[Graduated Tier 1 Start Volume] > m.[Graduated Tier 2 Start Volume]) THEN 'Graduated Tier 1 Start Volume'
-                            WHEN (m.[Graduated Tier 2 Start Volume] > m.[Graduated Tier 3 Start Volume]) THEN 'Graduated Tier 2 Start Volume'
-                            WHEN (m.[Graduated Tier 3 Start Volume] > m.[Graduated Tier 4 Start Volume]) THEN 'Graduated Tier 3 Start Volume'
-                            WHEN (m.[Graduated Tier 4 Start Volume] > m.[Graduated Tier 5 Start Volume]) THEN 'Graduated Tier 4 Start Volume'
-                            WHEN (m.[Graduated Tier 5 Start Volume] > m.[Graduated Tier 6 Start Volume]) THEN 'Graduated Tier 5 Start Volume'
+                            WHEN (m.[Graduated Tier 1 Start Volume] >= m.[Graduated Tier 2 Start Volume]) THEN 'Graduated Tier 1 Start Volume'
+                            WHEN (m.[Graduated Tier 2 Start Volume] >= m.[Graduated Tier 3 Start Volume]) THEN 'Graduated Tier 2 Start Volume'
+                            WHEN (m.[Graduated Tier 3 Start Volume] >= m.[Graduated Tier 4 Start Volume]) THEN 'Graduated Tier 3 Start Volume'
+                            WHEN (m.[Graduated Tier 4 Start Volume] >= m.[Graduated Tier 5 Start Volume]) THEN 'Graduated Tier 4 Start Volume'
+                            WHEN (m.[Graduated Tier 5 Start Volume] >= m.[Graduated Tier 6 Start Volume]) THEN 'Graduated Tier 5 Start Volume'
 							END,
 	[Flagged Column Value] = CASE 
                            
-                            WHEN (m.[Graduated Tier 1 Start Volume] > m.[Graduated Tier 2 Start Volume]) THEN CAST(m.[Graduated Tier 1 Start Volume] as nvarchar)
-                            WHEN (m.[Graduated Tier 2 Start Volume] > m.[Graduated Tier 3 Start Volume]) THEN CAST(m.[Graduated Tier 2 Start Volume] as nvarchar)
-                            WHEN (m.[Graduated Tier 3 Start Volume] > m.[Graduated Tier 4 Start Volume]) THEN CAST(m.[Graduated Tier 3 Start Volume] as nvarchar)
-                            WHEN (m.[Graduated Tier 4 Start Volume] > m.[Graduated Tier 5 Start Volume]) THEN CAST(m.[Graduated Tier 4 Start Volume] as nvarchar)
-                            WHEN (m.[Graduated Tier 5 Start Volume] > m.[Graduated Tier 6 Start Volume]) THEN CAST(m.[Graduated Tier 5 Start Volume] as nvarchar)
+                            WHEN (m.[Graduated Tier 1 Start Volume] >= m.[Graduated Tier 2 Start Volume]) THEN CAST(m.[Graduated Tier 1 Start Volume] as nvarchar)
+                            WHEN (m.[Graduated Tier 2 Start Volume] >= m.[Graduated Tier 3 Start Volume]) THEN CAST(m.[Graduated Tier 2 Start Volume] as nvarchar)
+                            WHEN (m.[Graduated Tier 3 Start Volume] >= m.[Graduated Tier 4 Start Volume]) THEN CAST(m.[Graduated Tier 3 Start Volume] as nvarchar)
+                            WHEN (m.[Graduated Tier 4 Start Volume] >= m.[Graduated Tier 5 Start Volume]) THEN CAST(m.[Graduated Tier 4 Start Volume] as nvarchar)
+                            WHEN (m.[Graduated Tier 5 Start Volume] >= m.[Graduated Tier 6 Start Volume]) THEN CAST(m.[Graduated Tier 5 Start Volume] as nvarchar)
 							END,
 	[Remarks] = CASE 
                             
-                            WHEN (m.[Graduated Tier 1 Start Volume] > m.[Graduated Tier 2 Start Volume]) 
+                            WHEN (m.[Graduated Tier 1 Start Volume] >= m.[Graduated Tier 2 Start Volume]) 
                             THEN 'Meter Graduated Tier 1 Start Volume:('+CAST(m.[Graduated Tier 1 Start Volume] as nvarchar)+') is higher than Meter Graduated Tier 2 Start Volume of ('+ CAST(m.[Graduated Tier 2 Start Volume] as nvarchar)+')'
 
-                            WHEN (m.[Graduated Tier 2 Start Volume] > m.[Graduated Tier 3 Start Volume]) 
+                            WHEN (m.[Graduated Tier 2 Start Volume] >= m.[Graduated Tier 3 Start Volume]) 
                             THEN 'Meter Graduated Tier 2 Start Volume:('+CAST(m.[Graduated Tier 2 Start Volume] as nvarchar)+') is higher than Meter Graduated Tier 3 Start Volume of ('+ CAST(m.[Graduated Tier 3 Start Volume] as nvarchar)+')'
                             
-                            WHEN (m.[Graduated Tier 3 Start Volume] > m.[Graduated Tier 4 Start Volume]) 
+                            WHEN (m.[Graduated Tier 3 Start Volume] >= m.[Graduated Tier 4 Start Volume]) 
                             THEN 'Meter Graduated Tier 3 Start Volume:('+CAST(m.[Graduated Tier 3 Start Volume] as nvarchar)+') is higher than Meter Graduated Tier 4 Start Volume of ('+ CAST(m.[Graduated Tier 4 Start Volume] as nvarchar)+')'
                             
-                            WHEN (m.[Graduated Tier 4 Start Volume] > m.[Graduated Tier 5 Start Volume]) 
+                            WHEN (m.[Graduated Tier 4 Start Volume] >= m.[Graduated Tier 5 Start Volume]) 
                             THEN 'Meter Graduated Tier 4 Start Volume:('+CAST(m.[Graduated Tier 4 Start Volume] as nvarchar)+') is higher than Meter Graduated Tier 5 Start Volume of ('+ CAST(m.[Graduated Tier 5 Start Volume] as nvarchar)+')'
                             
-                            WHEN (m.[Graduated Tier 5 Start Volume] > m.[Graduated Tier 6 Start Volume]) 
+                            WHEN (m.[Graduated Tier 5 Start Volume] >= m.[Graduated Tier 6 Start Volume]) 
                             THEN 'Meter Graduated Tier 5 Start Volume:('+CAST(m.[Graduated Tier 5 Start Volume] as nvarchar)+') is higher than Meter Graduated Tier 6 Start Volume of ('+ CAST(m.[Graduated Tier 6 Start Volume] as nvarchar)+')'
 							END,
 	[SKU State] = s.[State],	
@@ -95,15 +95,15 @@ FROM
 		 e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
          and  (
            
-            (m.[Graduated Tier 1 Start Volume] > m.[Graduated Tier 2 Start Volume])
+            (m.[Graduated Tier 1 Start Volume] >= m.[Graduated Tier 2 Start Volume])
             OR
-            (m.[Graduated Tier 2 Start Volume] > m.[Graduated Tier 3 Start Volume])
+            (m.[Graduated Tier 2 Start Volume] >= m.[Graduated Tier 3 Start Volume])
             OR
-            (m.[Graduated Tier 3 Start Volume] > m.[Graduated Tier 4 Start Volume])
+            (m.[Graduated Tier 3 Start Volume] >= m.[Graduated Tier 4 Start Volume])
             OR
-            (m.[Graduated Tier 4 Start Volume] > m.[Graduated Tier 5 Start Volume])
+            (m.[Graduated Tier 4 Start Volume] >= m.[Graduated Tier 5 Start Volume])
             OR
-            (m.[Graduated Tier 5 Start Volume] > m.[Graduated Tier 6 Discount Rate])
+            (m.[Graduated Tier 5 Start Volume] >= m.[Graduated Tier 6 Discount Rate])
 
             )
 	RETURN 
