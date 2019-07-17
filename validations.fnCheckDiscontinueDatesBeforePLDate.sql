@@ -60,8 +60,10 @@ FROM
 	JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s (NOLOCK)		ON s.[Parent ID] = m.[MeterID]
 
 
-WHERE 
-
+WHERE (
+	(cast(s.[SAP Discontinue Date] as date) <>	DATEADD(dd,-1,cast(s.[Public Status Date] as date))
+)
+	((cast(s.[SAP Discontinue Date] as date) <> DATEADD(dd,-1,cast(s.[Public Status Date] as date))
 	(s.[SAP Discontinue Date]) <> DATEADD(dd,DAY(s.[Public Status Date]), -1)
 	--AND Day(s.[SAP Discontinue Date]) <> DAY(EOMONTH(s.[SAP Discontinue Date])) 
 	AND e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
