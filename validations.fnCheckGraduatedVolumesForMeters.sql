@@ -67,19 +67,19 @@ SELECT
 	[Remarks] = CASE 
                             
                             WHEN (m.[Graduated Tier 1 Start Volume] >= m.[Graduated Tier 2 Start Volume]) 
-                            THEN 'Meter Graduated Tier 1 Start Volume:('+CAST(m.[Graduated Tier 1 Start Volume] as nvarchar)+') is higher than Meter Graduated Tier 2 Start Volume of ('+ CAST(m.[Graduated Tier 2 Start Volume] as nvarchar)+')'
+                            THEN 'Meter Graduated Tier 1 Start Volume:('+CAST(m.[Graduated Tier 1 Start Volume] as nvarchar)+') is higher than or equal to Meter Graduated Tier 2 Start Volume of ('+ CAST(m.[Graduated Tier 2 Start Volume] as nvarchar)+')'
 
                             WHEN (m.[Graduated Tier 2 Start Volume] >= m.[Graduated Tier 3 Start Volume]) 
-                            THEN 'Meter Graduated Tier 2 Start Volume:('+CAST(m.[Graduated Tier 2 Start Volume] as nvarchar)+') is higher than Meter Graduated Tier 3 Start Volume of ('+ CAST(m.[Graduated Tier 3 Start Volume] as nvarchar)+')'
+                            THEN 'Meter Graduated Tier 2 Start Volume:('+CAST(m.[Graduated Tier 2 Start Volume] as nvarchar)+') is higher than or equal to Meter Graduated Tier 3 Start Volume of ('+ CAST(m.[Graduated Tier 3 Start Volume] as nvarchar)+')'
                             
                             WHEN (m.[Graduated Tier 3 Start Volume] >= m.[Graduated Tier 4 Start Volume]) 
-                            THEN 'Meter Graduated Tier 3 Start Volume:('+CAST(m.[Graduated Tier 3 Start Volume] as nvarchar)+') is higher than Meter Graduated Tier 4 Start Volume of ('+ CAST(m.[Graduated Tier 4 Start Volume] as nvarchar)+')'
+                            THEN 'Meter Graduated Tier 3 Start Volume:('+CAST(m.[Graduated Tier 3 Start Volume] as nvarchar)+') is higher than or equal to Meter Graduated Tier 4 Start Volume of ('+ CAST(m.[Graduated Tier 4 Start Volume] as nvarchar)+')'
                             
                             WHEN (m.[Graduated Tier 4 Start Volume] >= m.[Graduated Tier 5 Start Volume]) 
-                            THEN 'Meter Graduated Tier 4 Start Volume:('+CAST(m.[Graduated Tier 4 Start Volume] as nvarchar)+') is higher than Meter Graduated Tier 5 Start Volume of ('+ CAST(m.[Graduated Tier 5 Start Volume] as nvarchar)+')'
+                            THEN 'Meter Graduated Tier 4 Start Volume:('+CAST(m.[Graduated Tier 4 Start Volume] as nvarchar)+') is higher than or equal to Meter Graduated Tier 5 Start Volume of ('+ CAST(m.[Graduated Tier 5 Start Volume] as nvarchar)+')'
                             
                             WHEN (m.[Graduated Tier 5 Start Volume] >= m.[Graduated Tier 6 Start Volume]) 
-                            THEN 'Meter Graduated Tier 5 Start Volume:('+CAST(m.[Graduated Tier 5 Start Volume] as nvarchar)+') is higher than Meter Graduated Tier 6 Start Volume of ('+ CAST(m.[Graduated Tier 6 Start Volume] as nvarchar)+')'
+                            THEN 'Meter Graduated Tier 5 Start Volume:('+CAST(m.[Graduated Tier 5 Start Volume] as nvarchar)+') is higher than or equal to Meter Graduated Tier 6 Start Volume of ('+ CAST(m.[Graduated Tier 6 Start Volume] as nvarchar)+')'
 							END,
 	[SKU State] = s.[State],	
 	[SAP Rate Start Date] = e.[SAP Rate Start Date],

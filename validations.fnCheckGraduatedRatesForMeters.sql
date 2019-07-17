@@ -66,21 +66,21 @@ SELECT
 							END,
 	[Remarks] = CASE 
                             WHEN ( m.[Direct Rate] <= m.[Graduated Tier 1 Discount Rate] )
-                            THEN 'Meter Direct Rate: '+CAST(m.[Direct Rate] as nvarchar)+'is lower than Meter Graduated Tier 1 Discount Rate of ('+ CAST(m.[Graduated Tier 1 Discount Rate] as nvarchar)+')'
+                            THEN 'Meter Direct Rate: '+CAST(m.[Direct Rate] as nvarchar)+'is lower than or equal to Meter Graduated Tier 1 Discount Rate of ('+ CAST(m.[Graduated Tier 1 Discount Rate] as nvarchar)+')'
                             WHEN (m.[Graduated Tier 1 Discount Rate] <= m.[Graduated Tier 2 Discount Rate]) 
-                            THEN 'Meter Graduated Tier 1 Discount Rate:('+CAST(m.[Graduated Tier 1 Discount Rate] as nvarchar)+') is lower than Meter Graduated Tier 2 Discount Rate of ('+ CAST(m.[Graduated Tier 2 Discount Rate] as nvarchar)+')'
+                            THEN 'Meter Graduated Tier 1 Discount Rate:('+CAST(m.[Graduated Tier 1 Discount Rate] as nvarchar)+') is lower than or equal to Meter Graduated Tier 2 Discount Rate of ('+ CAST(m.[Graduated Tier 2 Discount Rate] as nvarchar)+')'
 
                             WHEN (m.[Graduated Tier 2 Discount Rate] <= m.[Graduated Tier 3 Discount Rate]) 
-                            THEN 'Meter Graduated Tier 2 Discount Rate:('+CAST(m.[Graduated Tier 2 Discount Rate] as nvarchar)+') is lower than Meter Graduated Tier 3 Discount Rate of ('+ CAST(m.[Graduated Tier 3 Discount Rate] as nvarchar)+')'
+                            THEN 'Meter Graduated Tier 2 Discount Rate:('+CAST(m.[Graduated Tier 2 Discount Rate] as nvarchar)+') is lower than or equal to Meter Graduated Tier 3 Discount Rate of ('+ CAST(m.[Graduated Tier 3 Discount Rate] as nvarchar)+')'
                             
                             WHEN (m.[Graduated Tier 3 Discount Rate] <= m.[Graduated Tier 4 Discount Rate]) 
-                            THEN 'Meter Graduated Tier 3 Discount Rate:('+CAST(m.[Graduated Tier 3 Discount Rate] as nvarchar)+') is lower than Meter Graduated Tier 4 Discount Rate of ('+ CAST(m.[Graduated Tier 4 Discount Rate] as nvarchar)+')'
+                            THEN 'Meter Graduated Tier 3 Discount Rate:('+CAST(m.[Graduated Tier 3 Discount Rate] as nvarchar)+') is lower than or equal to Meter Graduated Tier 4 Discount Rate of ('+ CAST(m.[Graduated Tier 4 Discount Rate] as nvarchar)+')'
                             
                             WHEN (m.[Graduated Tier 4 Discount Rate] <= m.[Graduated Tier 5 Discount Rate]) 
-                            THEN 'Meter Graduated Tier 4 Discount Rate:('+CAST(m.[Graduated Tier 4 Discount Rate] as nvarchar)+') is lower than Meter Graduated Tier 5 Discount Rate of ('+ CAST(m.[Graduated Tier 5 Discount Rate] as nvarchar)+')'
+                            THEN 'Meter Graduated Tier 4 Discount Rate:('+CAST(m.[Graduated Tier 4 Discount Rate] as nvarchar)+') is lower than or equal to Meter Graduated Tier 5 Discount Rate of ('+ CAST(m.[Graduated Tier 5 Discount Rate] as nvarchar)+')'
                             
                             WHEN (m.[Graduated Tier 5 Discount Rate] <= m.[Graduated Tier 6 Discount Rate]) 
-                            THEN 'Meter Graduated Tier 5 Discount Rate:('+CAST(m.[Graduated Tier 5 Discount Rate] as nvarchar)+') is lower than Meter Graduated Tier 6 Discount Rate of ('+ CAST(m.[Graduated Tier 6 Discount Rate] as nvarchar)+')'
+                            THEN 'Meter Graduated Tier 5 Discount Rate:('+CAST(m.[Graduated Tier 5 Discount Rate] as nvarchar)+') is lower than or equal to Meter Graduated Tier 6 Discount Rate of ('+ CAST(m.[Graduated Tier 6 Discount Rate] as nvarchar)+')'
 							END,
 	[SKU State] = s.[State],	
 	[SAP Rate Start Date] = e.[SAP Rate Start Date],

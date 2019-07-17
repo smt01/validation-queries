@@ -1,14 +1,6 @@
--- ================================================
--- Template generated from Template Explorer using:
--- Create Multi-Statement Function (New Menu).SQL
---
--- Use the Specify Values for Template Parameters 
--- command (Ctrl-Shift-M) to fill in the parameter 
--- values below.
---
--- This block of comments will not be included in
--- the definition of the function.
--- ================================================
+USE [dbASOMS_Validation]
+GO
+/****** Object:  UserDefinedFunction [validations].[fnCheckRegionsOfSKU]    Script Date: 7/17/2019 3:44:42 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -19,7 +11,7 @@ GO
 -- Description:	Checks if the region in the SKU is a valid region
 --				User story: https://dev.azure.com/AzureReleaseOperation/Release%20Implementation/_workitems/edit/129
 -- =============================================
-CREATE FUNCTION [validations].[fnCheckRegionsOfSKU] 
+CREATE FUNCTION [validations].[fnCheckRegionsOfSKU]
 (
 	
 )
@@ -60,15 +52,14 @@ SELECT
 where 
  e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
 AND (s.[Region Name] not in (
-select distinct v.[Ref Full Text] from [Prod].[vwASOMSRefValidationsRegion] v 
+select distinct v.[Ref Full Text] from [dbASOMS_Production].[Prod].[vwASOMSRefValidationsRegion] v where v.[Is RefAbbreviation Active] = 'Yes'
 UNION 
-select distinct vd.[Ref Full Text] from [Prod].[vwASOMSRefValidationsDraftRegion] vd 
+select distinct vd.[Ref Full Text] from [dbASOMS_Production].[Prod].[vwASOMSRefValidationsDraftRegion] vd where vd.[Is RefAbbreviation Active] = 'Yes'
 UNION
-select distinct a.[Ref Full Text] from [Prod].[vwASOMSRefAbbreviationsRegion] a 
+select distinct a.[Ref Full Text] from [dbASOMS_Production].[Prod].[vwASOMSRefAbbreviationsRegion] a where a.[Is RefAbbreviation Active] = 'Yes'
 )
 )
 
 RETURN 
 END
 
-GO
