@@ -1,14 +1,6 @@
--- ================================================
--- Template generated from Template Explorer using:
--- Create Multi-Statement Function (New Menu).SQL
---
--- Use the Specify Values for Template Parameters 
--- command (Ctrl-Shift-M) to fill in the parameter 
--- values below.
---
--- This block of comments will not be included in
--- the definition of the function.
--- ================================================
+USE [dbASOMS_Validation]
+GO
+/****** Object:  UserDefinedFunction [validations].[fnCheckDiscontinueDatesBeforePLDate]    Script Date: 7/19/2019 3:11:05 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -50,7 +42,7 @@ BEGIN
 	[Flagged Column Value] = CAST(s.[SAP Discontinue Date] AS DATE),
 	[Remarks] = 'The SAP Discontinue Date should be one day before the PL date of: '+ CAST(CAST(s. [Public Status Date] as DATE) as nvarchar(max)),
 	[SKU State] = s.[State],	
-	[SAP Rate Start Date] = e.[SAP Rate Start Date],
+	[SAP Rate Start Date] = CAST(e.[SAP Rate Start Date] as DATE),
 	[Cayman Release] = e.[Cayman Release],
 	[Meter Status]  = m.[Meter Status]
 
@@ -60,16 +52,15 @@ FROM
 	JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s (NOLOCK)		ON s.[Parent ID] = m.[MeterID]
 
 
-WHERE (
-	(cast(s.[SAP Discontinue Date] as date) <>	DATEADD(dd,-1,cast(s.[Public Status Date] as date))
+WHERE 
+
+	(
+	(cast(s.[SAP Discontinue Date] as date)) <>	DATEADD(DAY,-1,cast(s.[SAP Rate Start Date] as date))
 )
-	((cast(s.[SAP Discontinue Date] as date) <> DATEADD(dd,-1,cast(s.[Public Status Date] as date))
-	(s.[SAP Discontinue Date]) <> DATEADD(dd,DAY(s.[Public Status Date]), -1)
 	--AND Day(s.[SAP Discontinue Date]) <> DAY(EOMONTH(s.[SAP Discontinue Date])) 
 	AND e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
 
-ORDER BY s.[Public Status Date] DESC
+ORDER BY s.[SAP Rate Start Date] DESC
 
 RETURN 
 END
-GO
