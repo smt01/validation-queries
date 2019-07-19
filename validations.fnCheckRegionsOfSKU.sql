@@ -51,12 +51,12 @@ SELECT
 		JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s (NOLOCK)		ON s.[Parent ID] = m.[MeterID]
 where 
  e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
-AND (s.[Region Name] not in (
-select distinct v.[Ref Full Text] from [dbASOMS_Production].[Prod].[vwASOMSRefValidationsRegion] v where v.[Is RefAbbreviation Active] = 'Yes'
+AND (s.[Region Name] COLLATE Latin1_General_CS_AS  not in (
+select distinct v.[Ref Full Text] COLLATE Latin1_General_CS_AS from [dbASOMS_Production].[Prod].[vwASOMSRefValidationsRegion] v where v.[Is RefAbbreviation Active] = 'Yes'
 UNION 
-select distinct vd.[Ref Full Text] from [dbASOMS_Production].[Prod].[vwASOMSRefValidationsDraftRegion] vd where vd.[Is RefAbbreviation Active] = 'Yes'
+select distinct vd.[Ref Full Text] COLLATE Latin1_General_CS_AS  from [dbASOMS_Production].[Prod].[vwASOMSRefValidationsDraftRegion] vd where vd.[Is RefAbbreviation Active] = 'Yes'
 UNION
-select distinct a.[Ref Full Text] from [dbASOMS_Production].[Prod].[vwASOMSRefAbbreviationsRegion] a where a.[Is RefAbbreviation Active] = 'Yes'
+select distinct a.[Ref Full Text] COLLATE Latin1_General_CS_AS from [dbASOMS_Production].[Prod].[vwASOMSRefAbbreviationsRegion] a where a.[Is RefAbbreviation Active] = 'Yes'
 )
 )
 
