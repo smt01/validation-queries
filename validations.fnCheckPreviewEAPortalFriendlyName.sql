@@ -1,14 +1,6 @@
--- ================================================
--- Template generated from Template Explorer using:
--- Create Multi-Statement Function (New Menu).SQL
---
--- Use the Specify Values for Template Parameters 
--- command (Ctrl-Shift-M) to fill in the parameter 
--- values below.
---
--- This block of comments will not be included in
--- the definition of the function.
--- ================================================
+USE [dbASOMS_Validation]
+GO
+/****** Object:  UserDefinedFunction [validations].[fnCheckPreviewEAPortalFriendlyName]    Script Date: 7/25/2019 12:43:35 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -22,7 +14,7 @@ GO
 --			     OR
 --				(s.[EA Portal Friendly Name] NOT LIKE '%PREVIEW' AND s.[SAP Sku Sub Type] LIKE '%PREVIEW%')
 -- =============================================
-CREATE FUNCTION [validations].[fnCheckPreviewEAPortalFriendlyName]
+ALTER FUNCTION [validations].[fnCheckPreviewEAPortalFriendlyName]
 (
 	
 )
@@ -48,7 +40,9 @@ SELECT
 [Event ID] = e.[ID],
 [Work Item Type] = 'Consumption SKU',
 	[Work Item ID] = s.[ConsumptionSkuID],	
-	[Validation Name] = 'If SKU sub-type is Preview then EA Portal Name needs to have the word Preview',	
+	[Validation Name] = CASE WHEN (ISNULL(s.[EA Portal Friendly Name],'') = '') THEN 'EA Portal Friendly Name should sot be blank'
+						ELSE 'If SKU sub-type is Preview then EA Portal Name needs to have the word Preview' END
+	,	
 	[Flagged Column Name] = CASE WHEN ( s.[EA Portal Friendly Name]  LIKE '%PREVIEW%' AND s.[Launch Stage] NOT LIKE '%PREVIEW%') 
 							THEN 'SKU Launch Stage' ELSE
 							CASE WHEN  (s.[EA Portal Friendly Name] NOT LIKE '%PREVIEW%' AND s.[Launch Stage] LIKE '%PREVIEW%')
@@ -61,8 +55,10 @@ SELECT
 							END,
 	[Remarks] = CASE WHEN ( s.[EA Portal Friendly Name]  LIKE '%PREVIEW%' AND s.[Launch Stage] NOT LIKE '%PREVIEW%') 
 							THEN 'SKU Launch Stage does not contain the word Preview'
+							ELSE CASE WHEN (ISNULL(s.[EA Portal Friendly Name],'') = '') THEN 'EA Portal Friendly name should not be blank' 
 							ELSE CASE WHEN  (s.[EA Portal Friendly Name] NOT LIKE '%PREVIEW%' AND s.[Launch Stage] LIKE '%PREVIEW%')
 							THEN 'EA Portal Friendly Name does not contain the word Preview' END
+							END
 							END,
 	[SKU State] = s.[State],	
 	[SAP Rate Start Date] = e.[SAP Rate Start Date],
@@ -83,4 +79,3 @@ WHERE
 
 RETURN 
 END
-GO
