@@ -1,6 +1,6 @@
 USE [dbASOMS_Validation]
 GO
-/****** Object:  UserDefinedFunction [validations].[fnCheckDiscontinueDatesBeforePLDate]    Script Date: 7/19/2019 3:11:05 PM ******/
+/****** Object:  UserDefinedFunction [validations].[fnCheckDiscontinueDatesBeforePLDate]    Script Date: 7/25/2019 10:36:53 AM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -40,7 +40,7 @@ BEGIN
 	[Validation Name] = 'SAP Discontinue Date should be Before PL Dates',	
 	[Flagged Column Name] = 'SAP Discontinue Date',
 	[Flagged Column Value] = CAST(s.[SAP Discontinue Date] AS DATE),
-	[Remarks] = 'The SAP Discontinue Date should be one day before the PL date of: '+ CAST(CAST(s. [Public Status Date] as DATE) as nvarchar(max)),
+	[Remarks] = 'The SAP Discontinue Date should be one day before the PL date of: '+ CAST(CAST(e.[SAP Rate Start Date] as DATE) as nvarchar(max)),
 	[SKU State] = s.[State],	
 	[SAP Rate Start Date] = CAST(e.[SAP Rate Start Date] as DATE),
 	[Cayman Release] = e.[Cayman Release],
@@ -53,9 +53,12 @@ FROM
 
 
 WHERE 
+		CONVERT(date,s.[SAP Discontinue Date]) <> '2030-12-31'
+		AND
 
 	(
-	(cast(s.[SAP Discontinue Date] as date)) <>	DATEADD(DAY,-1,cast(s.[SAP Rate Start Date] as date))
+	CONVERT(date,s.[SAP Discontinue Date]) <> DATEADD(DAY,-1,convert(date, e.[SAP Rate Start Date]))
+	--(cast(s.[SAP Discontinue Date] as date)) <>	DATEADD(DAY,-1,cast(s.[SAP Rate Start Date] as date))
 )
 	--AND Day(s.[SAP Discontinue Date]) <> DAY(EOMONTH(s.[SAP Discontinue Date])) 
 	AND e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
