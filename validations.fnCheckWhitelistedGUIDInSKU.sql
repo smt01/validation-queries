@@ -49,7 +49,7 @@ BEGIN
 	[Validation Name] = 'GUID with specific pricing',	
 	[Flagged Column Name] = 'Ressource GUID',
 	[Flagged Column Value] = s.[Resource GUID],							 
-	[Remarks] = 'CR Approver sign-off required for release',
+	[Remarks] = 'Meter with specific pricing detected. Double check before release',
 	[SKU State] = s.[State],	
 	[SAP Rate Start Date] = e.[SAP Rate Start Date],
 	[Cayman Release] = e.[Cayman Release],
