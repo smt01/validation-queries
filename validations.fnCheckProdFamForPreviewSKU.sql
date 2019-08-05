@@ -27,46 +27,51 @@ RETURNS @rtnTable TABLE (
 	[Event ID] INT NULL,
 	[Work Item Type] nvarchar(max) null,
 	[Work Item ID] INT NULL,
-	[Validation Name] nvarchar(max) NOT NULL,	
+	[Validation Name] nvarchar(max) NOT NULL,
 	[Flagged Column Name] nvarchar(max) NULL,
 	[Flagged Column Value] nvarchar(max) null,
 	[Remarks] nvarchar(max) NULL,
-	[SKU State] nvarchar(max) NULL,	
+	[SKU State] nvarchar(max) NULL,
 	[SAP Rate Start Date] datetime NULL,
-	[Cayman Release] nvarchar(max) NULL,	
+	[Cayman Release] nvarchar(max) NULL,
 	[Meter Status] nvarchar(max) NULL	
 	
 )
 AS
 BEGIN
 	-- Fill the table variable with the rows for your result set
-		INSERT into @rtnTable
-		SELECT
+	INSERT into @rtnTable
+	SELECT
 		[Event ID] = e.[ID],
 		[Work Item Type] = 'Consumption SKU',
-	[Work Item ID] = s.ConsumptionSkuID,
+		[Work Item ID] = s.ConsumptionSkuID,
 
-	[Validation Name] = 'Product Family name should line up with the Instance name',	
-	[Flagged Column Name] = 'Product Family',
-	[Flagged Column Value] = s.[Product Family],							 
-	[Remarks] = 'Product Family Name is not valid',
-	[SKU State] = s.[State],	
-	[SAP Rate Start Date] = e.[SAP Rate Start Date],
-	[Cayman Release] = e.[Cayman Release],
-	[Meter Status]  = m.[Meter Status]
-		
-	
-FROM 
-		[dbASOMS_Production].[Prod].[vwASOMSEvent] e (NOLOCK) 
-		JOIN [dbASOMS_Production].[Prod].[vwASOMSMeterHist] m (NOLOCK)				ON m.[Parent id] = e.[ID] 
-		JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s (NOLOCK)		ON s.[Parent ID] = m.[MeterID]
-where 
-		
-		(s.[Launch Stage] LIKE '%Preview%' AND (s.[Product Family] <> 'Azure Services in preview' AND s.[Product Family] <> 'Azure service in preview'))
-		
+		[Validation Name] = 'Product Family name should line up with the Instance name',
+		[Flagged Column Name] = 'Product Family',
+		[Flagged Column Value] = s.[Product Family],
+		[Remarks] = 'Product Family Name is not valid',
+		[SKU State] = s.[State],
+		[SAP Rate Start Date] = e.[SAP Rate Start Date],
+		[Cayman Release] = e.[Cayman Release],
+		[Meter Status]  = m.[Meter Status]
 
-and     e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
 
-RETURN 
+	FROM
+		[dbASOMS_Production].[Prod].[vwASOMSEvent] e (NOLOCK)
+		JOIN [dbASOMS_Production].[Prod].[vwASOMSMeterHist] m (NOLOCK) ON m.[Parent id] = e.[ID]
+		JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s (NOLOCK) ON s.[Parent ID] = m.[MeterID]
+	where 
+		
+		(
+		s.[Azure Instance] <> 'China' AND
+		s.[Launch Stage] LIKE '%Preview%' AND
+		(s.[Product Family] <> 'Azure Services in preview' AND s.[Product Family] <> 'Azure service in preview')
+		)
+
+
+		and e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold')
+	-- for things in flight
+
+	RETURN
 END
 GO
