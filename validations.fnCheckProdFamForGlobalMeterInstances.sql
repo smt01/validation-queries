@@ -62,7 +62,7 @@ FROM
 		JOIN [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s (NOLOCK)		ON s.[Parent ID] = m.[MeterID]
 where 
 		
-		(s.[Azure Instance] = 'Global' AND s.[Product Family] NOT IN (select distinct s.[Product Family] from [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s))
+		(s.[Azure Instance] <> 'China' AND s.[Product Family] NOT IN (select distinct s.[Product Family] from [dbASOMS_Production].[Prod].[vwASOMSConsumptionSKUHist] s))
 		
 
 and     e.[State] in ('Submitted', 'Reviewed', 'Approved', 'In Progress', 'On Hold') -- for things in flight
